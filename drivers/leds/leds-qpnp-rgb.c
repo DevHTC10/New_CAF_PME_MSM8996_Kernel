@@ -383,6 +383,21 @@ static struct alarm blinkstopfunc_rtc;
 static struct alarm vibrate_rtc;
 static struct alarm double_double_vol_rtc;
 
+// if aosp interface is used for RGB set, this will be set to 1
+static int aosp_mode = 0;
+// wake_by_user: used for AmbientDisplay detection:
+// this if 1, then device is waken by user. Otherwise no Input device was triggered, so we can deduce that it's an AmibentDisplay wake
+// and therefore if this is 0, Flashlight notification can be triggered, and haptic_blinking also can be stored, so that BLN can be
+// triggered later when screen is self BLANKing / screen off....
+static int wake_by_user = 1;
+
+int input_is_wake_by_user(void)
+{
+	pr_info("%s self wake: wake_by_user %d\n",__func__,wake_by_user);
+	return wake_by_user;
+}
+EXPORT_SYMBOL(input_is_wake_by_user);
+
 #define VIRTUAL_RAMP_SETP_TIME_BLINK_SLOW	110
 #define VIRTUAL_RAMP_SETP_TIME_DOUBLE_BLINK_SLOW	90
 
@@ -417,6 +432,12 @@ extern void flash_blink(bool haptic);
 extern void flash_stop_blink(void);
 extern void set_suspend_booster(int value);
 extern void set_vibrate(int value);
+
+int input_is_charging(void) {
+	return !!charging;
+}
+EXPORT_SYMBOL(input_is_charging);
+
 
 static enum alarmtimer_restart blinkstop_rtc_callback(struct alarm *al, ktime_t now) 
 {
@@ -768,6 +789,20 @@ static unsigned int MAX_DIFF = 200;
 
 // callback to register fingerprint vibration
 extern int register_fp_vibration(void);
+
+static unsigned long last_input_event = 0;
+void register_input_event(void) {
+//	pr_info("%s self wake: blocking event - wake_by_user\n",__func__);
+	wake_by_user = 1;
+	last_input_event = jiffies;
+	if (screen_on_early) {
+		// user must have exited Ambient display by pressing power/touchscreen etc, stop flash blinking!
+		flash_stop_blink();
+		// user is inputing phone, no haptic blinking should trigger BLN when screen off
+		haptic_blinking = 0;
+	}
+}
+EXPORT_SYMBOL(register_input_event);
 
 int register_haptic(int value)
 {
