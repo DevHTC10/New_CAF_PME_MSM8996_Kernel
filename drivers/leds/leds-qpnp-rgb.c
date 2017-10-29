@@ -4385,10 +4385,16 @@ static int fb_notifier_callback(struct notifier_block *self,
         blank = evdata->data;
         switch (*blank) {
         case FB_BLANK_UNBLANK:
+		pr_info("%s self wake: wake event EARLY\n",__func__);
+		// if last virtualkey wake was very close, it means that it the user powered screen on.
+		// if it's ambient display, virtual key lights are not set very close to the fb blank events...
+		///// ...also do not care about this if it's not aosp mode
+		wake_by_user = 0;
+		pr_info("%s fb wake_by_user %d diff %u\n",__func__, wake_by_user, last_vk_wake_diff);
+		screen_on_early = 1;
 		if (blinking) {
 			qpnp_buttonled_blink(0);
 		}
-		flash_stop_blink();
 		break;
 	}
     }
@@ -4402,7 +4408,12 @@ static int fb_notifier_callback(struct notifier_block *self,
 #ifdef CONFIG_LEDS_QPNP_BUTTON_BLINK
 		screen_on = 1;
 		LED_ERR("%s on\n", __func__);
-		alarm_cancel(&blinkstopfunc_rtc);
+		if (wake_by_user) {
+			flash_stop_blink();
+			alarm_cancel(&blinkstopfunc_rtc);
+			// user is inputing/waking phone, no haptic blinking should trigger BLN when screen off
+			haptic_blinking = 0;
+		}
 #endif
             break;
 
