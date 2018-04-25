@@ -199,5 +199,6 @@ source "drivers/firmware/Kconfig"
 source "drivers/bif/Kconfig"
 
 source "drivers/htc_msm_serial/Kconfig"
+source "drivers/htc_ril/Kconfig"
 source "drivers/htc_loglevel/Kconfig"
 endmenu
