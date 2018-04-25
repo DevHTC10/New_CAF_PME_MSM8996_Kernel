@@ -171,3 +171,5 @@ obj-$(CONFIG_BIF)		+= bif/
 
 obj-$(CONFIG_SENSORS)		+= sensors/
 obj-$(CONFIG_SENSORS_SSC)	+= sensors/
+#HTC LogLevel
+obj-$(CONFIG_HTC_LOGLEVEL)      += htc_loglevel/
