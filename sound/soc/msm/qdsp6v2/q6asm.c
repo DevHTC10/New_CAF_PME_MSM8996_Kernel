@@ -2500,11 +2500,6 @@ static int __q6asm_open_read(struct audio_client *ac,
 	if (!rc) {
 		pr_err("%s: timeout. waited for open read\n",
 				__func__);
-//HTC_AUD_START
-#ifdef CONFIG_HTC_DEBUG_DSP
-		BUG();
-#endif
-//HTC_AUD_END
 		rc = -ETIMEDOUT;
 		goto fail_cmd;
 	}
@@ -2635,11 +2630,6 @@ int q6asm_open_write_compressed(struct audio_client *ac, uint32_t format,
 		pr_err("%s: timeout. waited for OPEN_WRITE_COMPR rc[%d]\n",
 			__func__, rc);
 		rc = -ETIMEDOUT;
-//HTC_AUD_START
-#ifdef CONFIG_HTC_DEBUG_DSP
-		BUG();
-#endif
-//HTC_AUD_END
 		goto fail_cmd;
 	}
 
@@ -2790,11 +2780,6 @@ static int __q6asm_open_write(struct audio_client *ac, uint32_t format,
 			(atomic_read(&ac->cmd_state) >= 0), 5*HZ);
 	if (!rc) {
 		pr_err("%s: timeout. waited for open write\n", __func__);
-//HTC_AUD_START
-#ifdef CONFIG_HTC_DEBUG_DSP
-		BUG();
-#endif
-//HTC_AUD_END
 		rc = -ETIMEDOUT;
 		goto fail_cmd;
 	}
@@ -3021,11 +3006,6 @@ static int __q6asm_open_read_write(struct audio_client *ac, uint32_t rd_format,
 	if (!rc) {
 		pr_err("%s: timeout. waited for open read-write\n",
 				__func__);
-//HTC_AUD_START
-#ifdef CONFIG_HTC_DEBUG_DSP
-		BUG();
-#endif
-//HTC_AUD_END
 		rc = -ETIMEDOUT;
 		goto fail_cmd;
 	}
@@ -3142,11 +3122,6 @@ int q6asm_open_loopback_v2(struct audio_client *ac, uint16_t bits_per_sample)
 	if (!rc) {
 		pr_err("%s: timeout. waited for open_loopback\n",
 				__func__);
-//HTC_AUD_START
-#ifdef CONFIG_HTC_DEBUG_DSP
-		BUG();
-#endif
-//HTC_AUD_END
 		rc = -ETIMEDOUT;
 		goto fail_cmd;
 	}
@@ -5617,11 +5592,6 @@ int q6asm_memory_map(struct audio_client *ac, phys_addr_t buf_add, int dir,
 	if (!rc) {
 		pr_err("%s: timeout. waited for memory_map\n", __func__);
 		rc = -ETIMEDOUT;
-//HTC_AUD_START
-#ifdef CONFIG_HTC_DEBUG_DSP
-		BUG();
-#endif
-//HTC_AUD_END
 		kfree(buffer_node);
 		goto fail_cmd;
 	}
@@ -5699,11 +5669,6 @@ int q6asm_memory_unmap(struct audio_client *ac, phys_addr_t buf_add, int dir)
 	if (!rc) {
 		pr_err("%s: timeout. waited for memory_unmap of handle 0x%x\n",
 			__func__, mem_unmap.mem_map_handle);
-//HTC_AUD_START
-#ifdef CONFIG_HTC_DEBUG_DSP
-		BUG();
-#endif
-//HTC_AUD_END
 		rc = -ETIMEDOUT;
 		goto fail_cmd;
 	} else if (atomic_read(&ac->mem_state) > 0) {
@@ -5850,11 +5815,6 @@ static int q6asm_memory_map_regions(struct audio_client *ac, int dir,
 		pr_err("%s: timeout. waited for memory_map\n", __func__);
 		rc = -ETIMEDOUT;
 		kfree(buffer_node);
-//HTC_AUD_START
-#ifdef CONFIG_HTC_DEBUG_DSP
-		BUG();
-#endif
-//HTC_AUD_END
 		goto fail_cmd;
 	}
 	if (atomic_read(&ac->mem_state) > 0) {
@@ -5945,11 +5905,6 @@ static int q6asm_memory_unmap_regions(struct audio_client *ac, int dir)
 		pr_err("%s: timeout. waited for memory_unmap of handle 0x%x\n",
 			__func__, mem_unmap.mem_map_handle);
 		rc = -ETIMEDOUT;
-//HTC_AUD_START
-#ifdef CONFIG_HTC_DEBUG_DSP
-		BUG();
-#endif
-//HTC_AUD_END
 		goto fail_cmd;
 	} else if (atomic_read(&ac->mem_state) > 0) {
 		pr_err("%s: DSP returned error[%s]\n",
@@ -6136,11 +6091,6 @@ int q6asm_set_multich_gain(struct audio_client *ac, uint32_t channels,
 		pr_err("%s: timeout, set-params paramid[0x%x]\n", __func__,
 				multich_gain.data.param_id);
 		rc = -EINVAL;
-//HTC_AUD_START
-#ifdef CONFIG_HTC_DEBUG_DSP
-		BUG();
-#endif
-//HTC_AUD_END
 		goto done;
 	}
 	if (atomic_read(&ac->cmd_state_pp) > 0) {
@@ -7414,11 +7364,6 @@ static int __q6asm_cmd(struct audio_client *ac, int cmd, uint32_t stream_id)
 	if (!rc) {
 		pr_err("%s: timeout. waited for response opcode[0x%x]\n",
 				__func__, hdr.opcode);
-//HTC_AUD_START
-#ifdef CONFIG_HTC_DEBUG_DSP
-		BUG();
-#endif
-//HTC_AUD_END
 		rc = -ETIMEDOUT;
 		goto fail_cmd;
 	}

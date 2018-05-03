@@ -48,16 +48,6 @@
 #include <linux/sched.h>
 #include <linux/freezer.h>
 
-#ifndef CONFIG_HTC_DEBUG_DSP
-#undef pr_debug
-#undef pr_info
-#undef pr_err
-#define pr_debug(fmt, ...) pr_aud_debug(fmt, ##__VA_ARGS__)
-#define pr_info(fmt, ...) pr_aud_info(fmt, ##__VA_ARGS__)
-#define pr_err(fmt, ...) pr_aud_err(fmt, ##__VA_ARGS__)
-#endif
-//HTC_AUD_END
-
 #define DSP_PP_BUFFERING_IN_MSEC	25
 #define PARTIAL_DRAIN_ACK_EARLY_BY_MSEC	150
 #define MP3_OUTPUT_FRAME_SZ		1152
@@ -1300,11 +1290,6 @@ static int msm_compr_configure_dsp_for_playback
 			prtd->dsp_fragments);
 	if (ret < 0) {
 		pr_err("Audio Start: Buffer Allocation failed rc = %d\n", ret);
-//HTC_AUD_START
-#ifdef CONFIG_HTC_DEBUG_DSP
-		BUG();
-#endif
-//HTC_AUD_END
 		return -ENOMEM;
 	}
 

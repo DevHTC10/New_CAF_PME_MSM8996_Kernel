@@ -48,11 +48,6 @@
 #define pr_info(fmt, ...) pr_aud_info(fmt, ##__VA_ARGS__)
 #define pr_err(fmt, ...) pr_aud_err(fmt, ##__VA_ARGS__)
 
-#ifdef CONFIG_HTC_DEBUG_DSP
-static int dsp_ready = 0;
-#endif
-//HTC_AUD_END
-
 /* ENUM for adm_status */
 enum adm_cal_status {
 	ADM_STATUS_CALIBRATION_REQUIRED = 0,
@@ -270,11 +265,6 @@ static int adm_get_next_available_copp(int port_idx)
 								RESET_COPP_ID)
 			break;
 	}
-//HTC_AUD_START
-#ifdef CONFIG_HTC_DEBUG_DSP
-	pr_err("%s: copp idx%d\n", __func__, idx);
-#endif
-//HTC_AUD_END
 	return idx;
 }
 
@@ -1341,11 +1331,6 @@ static int32_t adm_callback(struct apr_client_data *data, void *priv)
 		pr_debug("%s: Reset event is received: %d %d apr[%pK]\n",
 			__func__,
 			data->reset_event, data->reset_proc, this_adm.apr);
-//HTC_AUD_START
-#ifdef CONFIG_HTC_DEBUG_DSP
-		dsp_ready = 0;
-#endif
-//HTC_AUD_END
 		if (this_adm.apr) {
 			apr_reset(this_adm.apr);
 			msm_dolby_ssr_reset(); //HTC_AUD
@@ -1566,16 +1551,8 @@ static int32_t adm_callback(struct apr_client_data *data, void *priv)
 				[port_idx][copp_idx], payload[0]);
 			atomic_set(&this_adm.copp.id[port_idx][copp_idx],
 				   open->copp_id);
-//HTC_AUD_START
-#ifdef CONFIG_HTC_DEBUG_DSP
-			pr_err("%s: coppid =%d, port_idx %d, copp_idx %d\n", __func__,
-				 open->copp_id, port_idx, copp_idx);
-
-#else
 			pr_debug("%s: coppid rxed=%d\n", __func__,
 				 open->copp_id);
-#endif
-//HTC_AUD_END
 			wake_up(&this_adm.copp.wait[port_idx][copp_idx]);
 			}
 			break;
@@ -1749,11 +1726,6 @@ static int adm_memory_map_regions(phys_addr_t *buf_add, uint32_t mempool_id,
 	if (!ret) {
 		pr_err("%s: timeout. waited for memory_map\n", __func__);
 		ret = -EINVAL;
-//HTC_AUD_START
-#ifdef CONFIG_HTC_DEBUG_DSP
-		BUG();
-#endif
-//HTC_AUD_END
 		goto fail_cmd;
 	} else if (atomic_read(&this_adm.adm_stat) > 0) {
 		pr_err("%s: DSP returned error[%s]\n",
@@ -1804,11 +1776,6 @@ static int adm_memory_unmap_regions(void)
 	if (!ret) {
 		pr_err("%s: timeout. waited for memory_unmap\n",
 		       __func__);
-//HTC_AUD_START
-#ifdef CONFIG_HTC_DEBUG_DSP
-		BUG();
-#endif
-//HTC_AUD_END
 		ret = -EINVAL;
 		goto fail_cmd;
 	} else if (atomic_read(&this_adm.adm_stat) > 0) {
@@ -2445,17 +2412,9 @@ int adm_open(int port_id, int path, int rate, int channel_mode, int topology,
 	int port_idx, copp_idx, flags;
 	int tmp_port = q6audio_get_port_id(port_id);
 
-//HTC_AUD_START
-#ifdef CONFIG_HTC_DEBUG_DSP
-	pr_err("%s:port %#x path:%d rate:%d mode:%d perf_mode:%d,topo_id %d\n",
+	pr_debug("%s:port %#x path:%d rate:%d mode:%d perf_mode:%d,topo_id %d\n",
 		 __func__, port_id, path, rate, channel_mode, perf_mode,
-		 topology); //HTC_AUDIO
-#else
-	pr_info("%s:port %#x path:%d rate:%d mode:%d perf_mode:%d,topo_id %d\n",
-		 __func__, port_id, path, rate, channel_mode, perf_mode,
-		 topology); //HTC_AUDIO
-#endif
-//HTC_AUD_END
+		 topology);
 
 	port_id = q6audio_convert_virtual_to_portid(port_id);
 	port_idx = adm_validate_and_get_port_index(port_id);
@@ -2561,14 +2520,8 @@ int adm_open(int port_id, int path, int rate, int channel_mode, int topology,
 
 	/* Create a COPP if port id are not enabled */
 	if (atomic_read(&this_adm.copp.cnt[port_idx][copp_idx]) == 0) {
-//HTC_AUD_START
-#ifdef CONFIG_HTC_DEBUG_DSP
-		pr_err("%s: open ADM: port_idx: %d, copp_idx: %d\n", __func__,
-			 port_idx, copp_idx);
-#else
 		pr_debug("%s: open ADM: port_idx: %d, copp_idx: %d\n", __func__,
 			 port_idx, copp_idx);
-#endif
 #if 0
 	if ((topology == SRS_TRUMEDIA_TOPOLOGY_ID) &&
 #else
@@ -2625,17 +2578,9 @@ int adm_open(int port_id, int path, int rate, int channel_mode, int topology,
 		if (ret)
 			return ret;
 
-//HTC_AUD_START
-#ifdef CONFIG_HTC_DEBUG_DSP
-		pr_err("%s: port_id=0x%x rate=%d topology_id=0x%X\n",
-			__func__, open.endpoint_id_1, open.sample_rate,
-			open.topology_id);
-#else
 		pr_debug("%s: port_id=0x%x rate=%d topology_id=0x%X\n",
 			__func__, open.endpoint_id_1, open.sample_rate,
 			open.topology_id);
-#endif
-//HTC_AUD_END
 
 		atomic_set(&this_adm.copp.stat[port_idx][copp_idx], -1);
 
@@ -2695,11 +2640,6 @@ int adm_open(int port_id, int path, int rate, int channel_mode, int topology,
 		if (!ret) {
 			pr_err("%s: ADM open timedout for port_id: 0x%x for [0x%x]\n",
 						__func__, tmp_port, port_id);
-//HTC_AUD_START
-#ifdef CONFIG_HTC_DEBUG_DSP
-			BUG();
-#endif
-//HTC_AUD_END
 			return -EINVAL;
 		} else if (atomic_read(&this_adm.copp.stat
 					[port_idx][copp_idx]) > 0) {
@@ -2707,26 +2647,10 @@ int adm_open(int port_id, int path, int rate, int channel_mode, int topology,
 				__func__, adsp_err_get_err_str(
 				atomic_read(&this_adm.copp.stat
 				[port_idx][copp_idx])));
-//HTC_AUD_START
-#ifdef CONFIG_HTC_DEBUG_DSP
-			if(dsp_ready == 1) {
-				pr_err("%s: HTC trigger bug due to open fail \n", __func__);
-				BUG();
-			}
-#endif
-//HTC_AUD_END
 			return adsp_err_get_lnx_err_code(
 					atomic_read(&this_adm.copp.stat
 						[port_idx][copp_idx]));
 		}
-//HTC_AUD_START
-#ifdef CONFIG_HTC_DEBUG_DSP
-		else if((topology == HTC_ONEDOTONE_DOLBY_ADM_COPP_TOPOLOGY_ID) || (topology == HTC_ADAPTIVE_DOLBY_ADM_COPP_TOPOLOGY_ID)) {
-			pr_err("%s: adm open success \n", __func__);
-			dsp_ready = 1; //dsp_ready due to open success
-		}
-#endif
-//HTC_AUD_END
 	}
 	atomic_inc(&this_adm.copp.cnt[port_idx][copp_idx]);
 
@@ -3148,16 +3072,8 @@ int adm_close(int port_id, int perf_mode, int copp_idx)
 	int ret = 0, port_idx;
 	int copp_id = RESET_COPP_ID;
 
-//HTC_AUD_START
-#ifdef CONFIG_HTC_DEBUG_DSP
-	pr_err("%s: port_id=0x%x perf_mode: %d copp_idx: %d\n", __func__,
-		 port_id, perf_mode, copp_idx); //HTC_AUDIO
-#else
-	pr_info("%s: port_id=0x%x perf_mode: %d copp_idx: %d\n", __func__,
-		 port_id, perf_mode, copp_idx); //HTC_AUDIO
-#endif
-//HTC_AUD_END
-
+	pr_debug("%s: port_id=0x%x perf_mode: %d copp_idx: %d\n", __func__,
+		 port_id, perf_mode, copp_idx);
 
 	port_id = q6audio_convert_virtual_to_portid(port_id);
 	port_idx = adm_validate_and_get_port_index(port_id);
@@ -3183,15 +3099,8 @@ int adm_close(int port_id, int perf_mode, int copp_idx)
 	atomic_dec(&this_adm.copp.cnt[port_idx][copp_idx]);
 	if (!(atomic_read(&this_adm.copp.cnt[port_idx][copp_idx]))) {
 		copp_id = adm_get_copp_id(port_idx, copp_idx);
-//HTC_AUD_START
-#ifdef CONFIG_HTC_DEBUG_DSP
-		pr_err("%s: Closing ADM port_idx:%d copp_idx:%d copp_id:0x%x\n",
-			 __func__, port_idx, copp_idx, copp_id);
-#else
 		pr_debug("%s: Closing ADM port_idx:%d copp_idx:%d copp_id:0x%x\n",
 			 __func__, port_idx, copp_idx, copp_id);
-#endif
-//HTC_AUD_END
 		if ((!perf_mode) && (this_adm.outband_memmap.paddr != 0) &&
 //HTC_AUD_START
 #if 0
@@ -3282,11 +3191,6 @@ int adm_close(int port_id, int perf_mode, int copp_idx)
 		if (!ret) {
 			pr_err("%s: ADM cmd Route timedout for port 0x%x\n",
 				__func__, port_id);
-//HTC_AUD_START
-#ifdef CONFIG_HTC_DEBUG_DSP
-			BUG();
-#endif
-//HTC_AUD_END
 			return -EINVAL;
 		} else if (atomic_read(&this_adm.copp.stat
 					[port_idx][copp_idx]) > 0) {
