@@ -2812,9 +2812,6 @@ static void dwc3_disconnect_gadget(struct dwc3 *dwc, int mute) /*++ 2015/11/26 U
 	if (dwc->gadget_driver && dwc->gadget_driver->disconnect) {
 		spin_unlock(&dwc->lock);
 /*++ 2015/11/26 USB Team, PCN00043 ++*/
-		if (mute)
-			dwc->gadget_driver->mute_disconnect(&dwc->gadget);
-		else
 			dwc->gadget_driver->disconnect(&dwc->gadget);
 /*-- 2015/11/26 USB Team, PCN00043 --*/
 		spin_lock(&dwc->lock);
