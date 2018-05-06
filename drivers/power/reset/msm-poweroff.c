@@ -48,7 +48,6 @@
 #define SCM_EDLOAD_MODE			0X01
 #define SCM_DLOAD_CMD			0x10
 
-extern void msm_watchdog_bark(void);
 
 static int restart_mode;
 static bool scm_pmic_arbiter_disable_supported;
@@ -436,9 +435,6 @@ static void msm_restart_prepare(char mode, const char *cmd)
 
 	if (cmd && !strncmp(cmd, "force-dog-bark", 14)) {
 		pr_info("%s: Force dog bark!\r\n", __func__);
-#if defined(CONFIG_HTC_DEBUG_WATCHDOG)
-		msm_watchdog_bark();
-#endif
 		mdelay(10000);
 		pr_info("%s: Force Watchdog bark does not work, falling back to normal process.\r\n" , __func__);
 	}
