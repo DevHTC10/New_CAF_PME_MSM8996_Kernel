@@ -355,8 +355,7 @@ static void msm_restart_prepare(char mode, const char *cmd)
 			need_warm_reset = true;
 	} else {
 		need_warm_reset = (get_dload_mode() ||
-				((cmd != NULL && cmd[0] != '\0') &&
-				strcmp(cmd, "userrequested")));
+
 				(htc_restart_cmd_to_type(cmd) == PON_POWER_OFF_WARM_RESET));
 	}
 
