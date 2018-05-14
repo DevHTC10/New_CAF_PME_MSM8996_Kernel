@@ -1251,6 +1251,11 @@ CONFIG_FPC_HTC_ADD_INPUT_DEVICE=y
 CONFIG_FPC_HTC_IRQ_LOGGING=y
 
 #
+# Unprivileged Configuration Interface
+#
+CONFIG_UCI=y
+
+#
 # SCSI device support
 #
 CONFIG_SCSI_MOD=y
